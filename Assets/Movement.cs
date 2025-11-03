@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using UnityEditor.SceneManagement;
 using UnityEditor.Timeline;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Test : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class Test : MonoBehaviour
     [SerializeField] KeyCode left = KeyCode.A;
     [SerializeField] KeyCode shoot = KeyCode.Space;
     [SerializeField] GameObject bullet;
+    float BulletCooldown = 2;
+    bool BulletReady = true;
     float speed = 5;
     void Start()
     {
@@ -21,24 +24,40 @@ public class Test : MonoBehaviour
     {
         if (Input.GetKey(right))
         {
-            print("Right");
-            transform.position = transform.position + new Vector3(1,0,0) * speed * Time.deltaTime;
+            if (transform.position.x <= 4)
+            {
+                print("Right");
+                transform.position = transform.position + new Vector3(1, 0, 0) * speed * Time.deltaTime;
+            }
         }
         if (Input.GetKey(left))
         {
-            print("Left");
-            transform.position = transform.position - new Vector3(1,0,0) * speed * Time.deltaTime;
+            if (transform.position.x >= -4) 
+            {
+                print("Left");
+                transform.position = transform.position - new Vector3(1, 0, 0) * speed * Time.deltaTime;
+            }
         }
 
         if (Input.GetKey(shoot))
         {
-            print("Shoot");
-            GameObject newBullet = Instantiate(bullet);
-            newBullet.transform.position = transform.localPosition;
-            if (newBullet.transform.position.y < 10)
+            if (BulletReady)
             {
-                newBullet.transform.position = newBullet.transform.position + new Vector3(0, 1, 0) * 4 * Time.deltaTime;
-                print("Moving bullet");
+                print("Shoot");
+                BulletReady = false;
+                GameObject newBullet = Instantiate(bullet);
+                newBullet.tag = "Bullet";
+                newBullet.transform.position = transform.position;
+            }
+        }
+
+        if (!BulletReady) 
+        {
+            BulletCooldown -= 1 * Time.deltaTime;
+            if (BulletCooldown <= 0)
+            {
+                BulletReady = true;
+                BulletCooldown = 2;
             }
         }
     }
