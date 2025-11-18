@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 using UnityEditor.Timeline;
 using UnityEngine;
@@ -10,9 +12,11 @@ public class Test : MonoBehaviour
     [SerializeField] KeyCode right = KeyCode.D;
     [SerializeField] KeyCode left = KeyCode.A;
     [SerializeField] KeyCode shoot = KeyCode.Space;
-    [SerializeField] GameObject bullet;
-    float BulletCooldown = 2;
+    public GameObject bullet;
+    public GameObject beam;
+    float BulletCooldown = 1;
     bool BulletReady = true;
+    int bullets;
     float speed = 5;
     void Start()
     {
@@ -20,6 +24,19 @@ public class Test : MonoBehaviour
     }
 
     // Update is called once per frame
+    void SummonBeam()
+    {
+        bullets = 0;
+        GameObject SpawnedBeam = Instantiate(beam);
+        SpawnedBeam.transform.position = transform.position + new Vector3(0, 5.25f, 0);
+        StartCoroutine(deleteBeam(1.2f, SpawnedBeam));
+    }
+
+    IEnumerator deleteBeam(float time, GameObject currentBeam)
+    {
+        yield return new WaitForSeconds(time);
+        Destroy(currentBeam);
+    }
     void Update()
     {
         if (Input.GetKey(right))
@@ -45,19 +62,25 @@ public class Test : MonoBehaviour
             {
                 print("Shoot");
                 BulletReady = false;
-                GameObject newBullet = Instantiate(bullet);
+                GameObject newBullet = Instantiate(bullet); //Skapa bullet och sätt position till playern
                 newBullet.tag = "Bullet";
                 newBullet.transform.position = transform.position;
+                if (bullets == 3) //Efter 3 bullets skapa en beam som tar 2 health
+                {
+                    SummonBeam();
+                    return;
+                }
+                bullets = bullets + 1;
             }
         }
 
-        if (!BulletReady) 
+        if (!BulletReady) //Cooldown för bullet spawning
         {
-            BulletCooldown -= 1 * Time.deltaTime;
+            BulletCooldown -= 2 * Time.deltaTime;
             if (BulletCooldown <= 0)
             {
                 BulletReady = true;
-                BulletCooldown = 2;
+                BulletCooldown = 1;
             }
         }
     }
