@@ -29,24 +29,27 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         Block blockHealth = other.GetComponent<Block>(); //Hitta block scriptet för att kunna ändra health
-        if (gameObject.tag == "Beam")
+        if (blockHealth)
         {
-            blockHealth.health = blockHealth.health - 2;
-        }
-        else if (gameObject.tag == "Bullet")
-        {
-            blockHealth.health -= 1;
-        }
+            if (gameObject.tag == "Beam") //Kollar om det är en beam eller bullet
+            {
+                blockHealth.health = blockHealth.health - 2; //Om det är beam tar den 2 health
+            }
+            else if (gameObject.tag == "Bullet")
+            {
+                blockHealth.health = blockHealth.health - 1;
+            }
 
-        if (blockHealth.health <= 0) //När blockhealth är 0 eller mindre ger det points och tar sönder block
-        {
-            stats.points = stats.points + 100;
-            Destroy(other.gameObject);
+            if (blockHealth.health <= 0) //När blockhealth är 0 eller mindre ger det points och tar sönder block
+            {
+                stats.points = stats.points + 100;
+                Destroy(other.gameObject);
+            }
+            if (gameObject.tag == "Beam")
+            {
+                return;
+            }
+            Destroy(gameObject);
         }
-        if (gameObject.tag == "Beam")
-        {
-            return;
-        }
-        Destroy(gameObject);
     }
 }

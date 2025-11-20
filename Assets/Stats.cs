@@ -40,8 +40,11 @@ public class Stats : MonoBehaviour
         WaveText.text = "Wave: "+Wave;
         if (blockCount == 0) 
         {
-            Wave += 1;
-            WaveStart();
+            if (Wave != 5)
+            {
+                Wave += 1;
+                WaveStart();
+            }
         }
     }
 }

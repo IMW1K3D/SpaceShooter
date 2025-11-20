@@ -32,7 +32,7 @@ public class Test : MonoBehaviour
         StartCoroutine(deleteBeam(1.2f, SpawnedBeam));
     }
 
-    IEnumerator deleteBeam(float time, GameObject currentBeam)
+    IEnumerator deleteBeam(float time, GameObject currentBeam) //Väntar den angivna tiden och tar sönder beam objectet
     {
         yield return new WaitForSeconds(time);
         Destroy(currentBeam);
@@ -65,12 +65,20 @@ public class Test : MonoBehaviour
                 GameObject newBullet = Instantiate(bullet); //Skapa bullet och sätt position till playern
                 newBullet.tag = "Bullet";
                 newBullet.transform.position = transform.position;
-                if (bullets == 3) //Efter 3 bullets skapa en beam som tar 2 health
-                {
-                    SummonBeam();
-                    return;
-                }
                 bullets = bullets + 1;
+            }
+        }
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            if (BulletReady)
+            {
+                if (bullets >= 3) //Om du har använt 3 bullets kan du trycka E för att använda beam
+                {
+                    BulletReady = false;
+                    SummonBeam();
+                    bullets = 0;
+                }
             }
         }
 
